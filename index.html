@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Dashboard - ระบบจัดการรายรับรายจ่าย</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" fill="#10B981"/>
+                    <path d="M16 8V16L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="16" cy="16" r="3" fill="white"/>
+                </svg>
+                <span class="logo-text">Farm Dash</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="nav-btn active" data-page="dashboard">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                แดชบอร์ด
+            </button>
+            <button class="nav-btn" data-page="records">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                รายการทั้งหมด
+            </button>
+            <button class="nav-btn" data-page="analytics">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                วิเคราะห์ข้อมูล
+            </button>
+            <button class="nav-btn" data-page="reports">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                รายงาน & Export
+            </button>
+            <button class="nav-btn" data-page="settings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                ตั้งค่า
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header" id="mobileHeader">
+        <button class="menu-toggle" id="menuToggle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="mobile-title">Farm Dashboard</span>
+        <button class="add-btn-mobile" id="addBtnMobile">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- ============ DASHBOARD PAGE ============ -->
+        <section class="page active" id="page-dashboard">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">แดชบอร์ด</h1>
+                    <p class="page-subtitle">ภาพรวมรายรับรายจ่ายของฟาร์ม</p>
+                </div>
+                <button class="btn-primary" id="addBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    เพิ่มรายการ
+                </button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-grid">
+                <div class="summary-card income">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="card-label">รายรับทั้งหมด</span>
+                        <span class="card-value" id="totalIncome">฿0</span>
+                    </div>
+                    <div class="card-trend up" id="incomeTrend">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                        <span id="incomeTrendText">0%</span>
+                    </div>
+                </div>
+
+                <div class="summary-card expense">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="card-label">รายจ่ายทั้งหมด</span>
+                        <span class="card-value" id="totalExpense">฿0</span>
+                    </div>
+                    <div class="card-trend down" id="expenseTrend">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+                        <span id="expenseTrendText">0%</span>
+                    </div>
+                </div>
+
+                <div class="summary-card profit">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="card-label">กำไรสุทธิ</span>
+                        <span class="card-value" id="totalProfit">฿0</span>
+                    </div>
+                    <div class="card-trend" id="profitMargin">
+                        <span>กำไร</span>
+                        <span id="profitMarginText">0%</span>
+                    </div>
+                </div>
+
+                <div class="summary-card yield">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="card-label">ผลผลิตรวม</span>
+                        <span class="card-value" id="totalYield">0</span>
+                    </div>
+                    <div class="card-trend">
+                        <span>รายการ</span>
+                        <span id="totalRecordCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">รอรับเงิน</span>
+                    <span class="stat-value pending" id="pendingIncome">฿0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">รับเงินแล้ว</span>
+                    <span class="stat-value paid" id="paidIncome">฿0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">รายการเดือนนี้</span>
+                    <span class="stat-value" id="thisMonthCount">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">รายรับเดือนนี้</span>
+                    <span class="stat-value income-text" id="thisMonthIncome">฿0</span>
+                </div>
+            </div>
+
+            <!-- Top Income & Expense -->
+            <div class="top-grid">
+                <div class="top-card">
+                    <h3 class="top-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                        รายรับสูงสุด 5 รายการ
+                    </h3>
+                    <div id="topIncomeList" class="top-list"></div>
+                </div>
+                <div class="top-card">
+                    <h3 class="top-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+                        รายจ่ายสูงสุด 5 รายการ
+                    </h3>
+                    <div id="topExpenseList" class="top-list"></div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="recent-section">
+                <div class="section-header">
+                    <h3 class="section-title">รายการล่าสุด</h3>
+                    <button class="btn-link" id="viewAllBtn">ดูทั้งหมด →</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>วันที่</th>
+                                <th>รายการ</th>
+                                <th>ประเภท</th>
+                                <th>ยอดเงิน</th>
+                                <th>สถานะ</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ RECORDS PAGE ============ -->
+        <section class="page" id="page-records">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">รายการทั้งหมด</h1>
+                    <p class="page-subtitle">ดูและจัดการรายการรายรับรายจ่ายทั้งหมด</p>
+                </div>
+                <button class="btn-primary" id="addBtnRecords">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    เพิ่มรายการ
+                </button>
+            </div>
+
+            <!-- Search & Filter -->
+            <div class="filter-bar">
+                <div class="search-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="searchInput" placeholder="ค้นหารายการ...">
+                </div>
+                <div class="filter-group">
+                    <select id="filterType">
+                        <option value="all">ประเภททั้งหมด</option>
+                        <option value="income">รายรับ</option>
+                        <option value="expense">รายจ่าย</option>
+                    </select>
+                    <select id="filterStatus">
+                        <option value="all">สถานะทั้งหมด</option>
+                        <option value="paid">รับเงินแล้ว</option>
+                        <option value="pending">รอรับเงิน</option>
+                    </select>
+                    <input type="date" id="filterDateStart" placeholder="วันที่เริ่มต้น">
+                    <input type="date" id="filterDateEnd" placeholder="วันที่สิ้นสุด">
+                </div>
+            </div>
+
+            <div class="table-container full-table">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="date">วันที่ ↕</th>
+                            <th class="sortable" data-sort="title">รายการ ↕</th>
+                            <th class="sortable" data-sort="type">ประเภท ↕</th>
+                            <th class="sortable" data-sort="amount">ยอดเงิน ↕</th>
+                            <th class="sortable" data-sort="status">สถานะ ↕</th>
+                            <th class="sortable" data-sort="category">หมวดหมู่ ↕</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allRecordsTableBody"></tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- ============ ANALYTICS PAGE ============ -->
+        <section class="page" id="page-analytics">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">วิเคราะห์ข้อมูล</h1>
+                    <p class="page-subtitle">กราฟและข้อมูลเชิงลึกทางการเงิน</p>
+                </div>
+                <select id="chartPeriod" class="select-sm">
+                    <option value="6">6 เดือนล่าสุด</option>
+                    <option value="12">12 เดือนล่าสุด</option>
+                    <option value="3">3 เดือนล่าสุด</option>
+                </select>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">รายรับ vs รายจ่าย (รายเดือน)</h3>
+                    <canvas id="incomeExpenseChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">กำไรสุทธิ (รายเดือน)</h3>
+                    <canvas id="profitChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">แนวโน้มรายรับ</h3>
+                    <canvas id="incomeTrendChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">สัดส่วนรายจ่ายตามหมวดหมู่</h3>
+                    <canvas id="expenseCategoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Monthly Breakdown -->
+            <div class="monthly-section">
+                <h3 class="section-title">สรุปข้อมูลรายเดือน</h3>
+                <div class="table-container full-table">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>เดือน</th>
+                                <th>รายรับ</th>
+                                <th>รายจ่าย</th>
+                                <th>กำไร</th>
+                                <th>รายการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ REPORTS PAGE ============ -->
+        <section class="page" id="page-reports">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">รายงาน & Export</h1>
+                    <p class="page-subtitle">สร้างและดาวน์โหลดรายงานทางการเงิน</p>
+                </div>
+            </div>
+
+            <div class="report-grid">
+                <div class="report-card">
+                    <div class="report-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
+                    <h3 class="report-title">Export Excel (.xlsx)</h3>
+                    <p class="report-desc">ดาวน์โหลดข้อมูลรายการทั้งหมดในรูปแบบ Excel</p>
+                    <button class="btn-secondary" id="exportExcel">ดาวน์โหลด</button>
+                </div>
+                <div class="report-card">
+                    <div class="report-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <h3 class="report-title">Export PDF Report</h3>
+                    <p class="report-desc">ดาวน์โหลดรายงานสรุปเป็น PDF</p>
+                    <button class="btn-secondary" id="exportPDF">ดาวน์โหลด</button>
+                </div>
+                <div class="report-card">
+                    <div class="report-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <h3 class="report-title">Export CSV</h3>
+                    <p class="report-desc">ดาวน์โหลดข้อมูลรายการในรูปแบบ CSV</p>
+                    <button class="btn-secondary" id="exportCSV">ดาวน์โหลด</button>
+                </div>
+            </div>
+
+            <!-- Backup & Restore -->
+            <div class="backup-section">
+                <h3 class="section-title">สำรอง & เรียกคืนข้อมูล</h3>
+                <div class="backup-grid">
+                    <div class="backup-card">
+                        <h4>สำรองข้อมูล</h4>
+                        <p>บันทึกข้อมูลทั้งหมดเป็นไฟล์ JSON</p>
+                        <button class="btn-secondary" id="backupData">สำรองข้อมูล</button>
+                    </div>
+                    <div class="backup-card">
+                        <h4>เรียกคืนข้อมูล</h4>
+                        <p>โหลดข้อมูลจากไฟล์สำรอง JSON</p>
+                        <label class="btn-secondary backup-label">
+                            เลือกไฟล์
+                            <input type="file" id="restoreInput" accept=".json" style="display:none">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ SETTINGS PAGE ============ -->
+        <section class="page" id="page-settings">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">ตั้งค่า</h1>
+                    <p class="page-subtitle">จัดการการตั้งค่าของระบบ</p>
+                </div>
+            </div>
+
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3 class="settings-title">ข้อมูลทั่วไป</h3>
+                    <div class="form-group">
+                        <label>ชื่อฟาร์ม</label>
+                        <input type="text" id="settingFarmName" placeholder="ชื่อฟาร์มของคุณ">
+                    </div>
+                    <div class="form-group">
+                        <label>สกุลเงิน</label>
+                        <select id="settingCurrency">
+                            <option value="฿">฿ บาท (THB)</option>
+                            <option value="$">$ ดอลลาร์ (USD)</option>
+                            <option value="€">€ ยูโร (EUR)</option>
+                            <option value="¥">¥ เยน (JPY)</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" id="saveSettings">บันทึกการตั้งค่า</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3 class="settings-title">หมวดหมู่</h3>
+                    <div class="category-section">
+                        <div class="category-group">
+                            <h4>หมวดหมู่รายรับ</h4>
+                            <div id="incomeCategories" class="category-list"></div>
+                        </div>
+                        <div class="category-group">
+                            <h4>หมวดหมู่รายจ่าย</h4>
+                            <div id="expenseCategories" class="category-list"></div>
+                        </div>
+                    </div>
+                    <div class="category-add">
+                        <input type="text" id="newCategoryName" placeholder="ชื่อหมวดหมู่ใหม่">
+                        <select id="newCategoryType">
+                            <option value="income">รายรับ</option>
+                            <option value="expense">รายจ่าย</option>
+                        </select>
+                        <button class="btn-primary btn-sm" id="addCategoryBtn">เพิ่ม</button>
+                    </div>
+                </div>
+
+                <div class="settings-card danger-zone">
+                    <h3 class="settings-title danger">โซนอันตราย</h3>
+                    <p>การดำเนินการด้านล่างจะลบข้อมูลถาวรและไม่สามารถเรียกคืนได้</p>
+                    <button class="btn-danger" id="clearAllData">ล้างข้อมูลทั้งหมด</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Add/Edit Record -->
+    <div class="modal-overlay" id="recordModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">เพิ่มรายการใหม่</h2>
+                <button class="modal-close" id="modalClose">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <form id="recordForm">
+                <input type="hidden" id="recordId">
+                
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>ประเภท *</label>
+                        <div class="type-toggle">
+                            <label class="toggle-option active" data-type="income">
+                                <input type="radio" name="recordType" value="income" checked>
+                                <span>รายรับ</span>
+                            </label>
+                            <label class="toggle-option" data-type="expense">
+                                <input type="radio" name="recordType" value="expense">
+                                <span>รายจ่าย</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>รายการ *</label>
+                    <input type="text" id="recordTitle" placeholder="เช่น ขายผักบุ้ง 50 กก." required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>ยอดเงิน *</label>
+                        <div class="input-with-prefix">
+                            <span class="currency-prefix" id="currencyPrefix">฿</span>
+                            <input type="number" id="recordAmount" placeholder="0.00" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="form-group half">
+                        <label>วันที่ *</label>
+                        <input type="date" id="recordDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>หมวดหมู่</label>
+                        <select id="recordCategory"></select>
+                    </div>
+                    <div class="form-group half" id="statusGroup">
+                        <label>สถานะ</label>
+                        <select id="recordStatus">
+                            <option value="paid">รับเงินแล้ว</option>
+                            <option value="pending">รอรับเงิน</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>ปริมาณผลผลิต (กก.)</label>
+                    <input type="number" id="recordYield" placeholder="0" step="0.1" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>หมายเหตุ</label>
+                    <textarea id="recordNote" rows="2" placeholder="ข้อมูลเพิ่มเติม (ไม่บังคับ)"></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="modalCancel">ยกเลิก</button>
+                    <button type="submit" class="btn-primary" id="modalSubmit">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Delete Confirm -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h2>ยืนยันการลบ</h2>
+                <button class="modal-close" id="deleteModalClose">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>คุณต้องการลบรายการนี้หรือไม่? การดำเนินการนี้ไม่สามารถเรียกคืนได้</p>
+                <p class="delete-item-name" id="deleteItemName"></p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelDelete">ยกเลิก</button>
+                <button class="btn-danger" id="confirmDelete">ลบรายการ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
