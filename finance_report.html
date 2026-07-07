@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายงานการเงิน - สวนลุงนะ Smart Farm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; font-weight: 500; }
+        td { padding: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .filter-btn { padding: 0.5rem 1rem; border-radius: 0.75rem; background: rgba(255, 255, 255, 0.05); transition: all 0.2s; }
+        .filter-btn.active { background: #22c55e; color: white; }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+
+    <!-- Header -->
+    <header class="bg-green-900/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between border-b border-white/10">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
+                <i class="fas fa-chart-pie text-white text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold leading-none">FINANCE REPORT</h1>
+                <p class="text-xs text-green-400">รายงานวิเคราะห์การเงิน</p>
+            </div>
+        </div>
+        <div class="flex gap-4">
+            <a href="finance.html" class="text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-wallet text-xl"></i>
+            </a>
+            <a href="index.html" class="text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-home text-xl"></i>
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 mt-6 max-w-6xl">
+        
+        <!-- Summary & Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div class="lg:col-span-1 space-y-4">
+                <div class="glass-card p-6">
+                    <h3 class="text-sm text-gray-400 mb-4 uppercase tracking-wider font-semibold">สรุปตามหมวดหมู่</h3>
+                    <div id="category-summary" class="space-y-3">
+                        <!-- Categories will be listed here -->
+                        <p class="text-gray-500 italic text-sm text-center py-4">กำลังประมวลผล...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-2">
+                <div class="glass-card p-6 h-full flex flex-col">
+                    <h3 class="text-sm text-gray-400 mb-4 uppercase tracking-wider font-semibold">สัดส่วนรายจ่าย</h3>
+                    <div class="flex-grow flex items-center justify-center relative min-h-[300px]">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="glass-card overflow-hidden">
+            <div class="p-6 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h3 class="text-lg font-semibold flex items-center gap-2">
+                    <i class="fas fa-list-ul text-green-500"></i> รายการทั้งหมด
+                </h3>
+                
+                <div class="flex gap-2">
+                    <button onclick="setFilter('all')" id="btn-all" class="filter-btn active">ทั้งหมด</button>
+                    <button onclick="setFilter('income')" id="btn-income" class="filter-btn text-green-400">รายรับ</button>
+                    <button onclick="setFilter('expense')" id="btn-expense" class="filter-btn text-red-400">รายจ่าย</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="report-table">
+                    <thead>
+                        <tr>
+                            <th>วันที่/เวลา</th>
+                            <th>ประเภท</th>
+                            <th>หมวดหมู่</th>
+                            <th>หมายเหตุ</th>
+                            <th class="text-right">จำนวนเงิน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-body">
+                        <!-- Data rows -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="empty-state" class="hidden text-center py-20 text-gray-500">
+                <i class="fas fa-search text-5xl mb-4 block"></i>
+                ไม่พบข้อมูลที่ค้นหา
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ================= FIREBASE CONFIG =================
+        const firebaseConfig = {
+            databaseURL: "https://smart-farm-platfor-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        let allData = [];
+        let currentFilter = 'all';
+        let chartInstance = null;
+
+        // ================= DATA PROCESSING =================
+        db.ref("finance").on("value", snap => {
+            const data = snap.val() || {};
+            allData = Object.values(data).sort((a, b) => b.id - a.id);
+            renderPage();
+        });
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + filter).classList.add('active');
+            renderPage();
+        }
+
+        function renderPage() {
+            const filtered = allData.filter(d => currentFilter === 'all' || d.type === currentFilter);
+            const body = document.getElementById("report-body");
+            const emptyState = document.getElementById("empty-state");
+            
+            if (filtered.length === 0) {
+                body.innerHTML = "";
+                emptyState.classList.remove("hidden");
+            } else {
+                emptyState.classList.add("hidden");
+                body.innerHTML = filtered.map(d => {
+                    const isIncome = d.type === "income";
+                    const date = new Date(d.id).toLocaleString('th-TH', { 
+                        day: '2-digit', month: 'short', year: '2-digit',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    return `
+                        <tr>
+                            <td class="text-sm text-gray-400">${date}</td>
+                            <td>
+                                <span class="px-2 py-1 rounded text-xs font-bold ${isIncome ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}">
+                                    ${isIncome ? 'รายรับ' : 'รายจ่าย'}
+                                </span>
+                            </td>
+                            <td>${d.category || 'ทั่วไป'}</td>
+                            <td class="text-gray-300">${d.note || '-'}</td>
+                            <td class="text-right font-bold ${isIncome ? 'text-green-400' : 'text-red-400'}">
+                                ${isIncome ? '+' : '-'}${d.amount.toLocaleString()}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            updateAnalytics();
+        }
+
+        function updateAnalytics() {
+            const expenseData = allData.filter(d => d.type === 'expense');
+            const categories = {};
+            
+            expenseData.forEach(d => {
+                const cat = d.category || 'อื่นๆ';
+                categories[cat] = (categories[cat] || 0) + d.amount;
+            });
+
+            // Update Summary List
+            const summaryDiv = document.getElementById("category-summary");
+            const sortedCats = Object.entries(categories).sort((a, b) => b[1] - a[1]);
+            
+            if (sortedCats.length === 0) {
+                summaryDiv.innerHTML = `<p class="text-gray-500 text-sm text-center">ไม่มีข้อมูลรายจ่าย</p>`;
+            } else {
+                summaryDiv.innerHTML = sortedCats.map(([cat, amt]) => `
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-400">${cat}</span>
+                        <span class="font-semibold">฿${amt.toLocaleString()}</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-1.5 mb-2">
+                        <div class="bg-green-500 h-1.5 rounded-full" style="width: ${(amt / expenseData.reduce((a,b)=>a+b.amount, 0) * 100).toFixed(1)}%"></div>
+                    </div>
+                `).join('');
+            }
+
+            // Update Chart
+            updateChart(categories);
+        }
+
+        function updateChart(categories) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            const labels = Object.keys(categories);
+            const data = Object.values(categories);
+            
+            if (chartInstance) chartInstance.destroy();
+            
+            if (labels.length === 0) return;
+
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#22c55e', '#ef4444', '#3b82f6', '#eab308', '#a855f7', '#f97316', '#06b6d4'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', font: { family: 'Kanit' }, padding: 20 }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+    </script>
+</body>
+</html>
