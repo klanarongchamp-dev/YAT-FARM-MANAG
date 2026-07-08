@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1783468267186,
+      "tag": "0000_oval_romulus",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1783468439815,
+      "tag": "0001_lush_madame_masque",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1783468498333,
+      "tag": "0002_wakeful_manta",
+      "breakpoints": true
+    }
+  ]
+}
